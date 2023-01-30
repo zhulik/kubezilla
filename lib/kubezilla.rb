@@ -6,7 +6,12 @@ require "zeitwerk"
 
 loader = Zeitwerk::Loader.for_gem
 
-class Kubezilla::Error < StandardError
+module Kubezilla
+  class Error < StandardError; end
+
+  def self.for(host:, scheme:, &)
+    Kubezilla::Client.new(host:, scheme:, &)
+  end
   # Your code goes here...
 end
 
