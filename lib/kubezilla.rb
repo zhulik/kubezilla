@@ -2,7 +2,6 @@
 
 require_relative "kubezilla/version"
 
-module Kubezilla
-  class Error < StandardError; end
+class Kubezilla::Error < StandardError
   # Your code goes here...
 end

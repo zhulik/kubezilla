@@ -2,11 +2,18 @@
 
 source "https://rubygems.org"
 
-# Specify your gem's dependencies in kubezilla.gemspec
 gemspec
 
-gem "rake", "~> 13.0"
+gem "rake"
 
-gem "rspec", "~> 3.0"
+gem "rspec"
 
-gem "rubocop", "~> 1.21"
+gem "rubocop"
+gem "rubocop-performance"
+gem "rubocop-rspec"
+
+gem "simplecov"
+gem "webmock"
+
+gem "overcommit"
+gem "solargraph"

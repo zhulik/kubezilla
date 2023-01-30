@@ -1,5 +1,27 @@
 AllCops:
-  TargetRubyVersion: 2.6
+  TargetRubyVersion: 3.2
+  NewCops: enable
+  SuggestExtensions: false
+
+require:
+  - rubocop-performance
+  - rubocop-rspec
+
+Layout/LineLength:
+  Max: 120
+  Exclude:
+    - spec/**/*_spec.rb
+
+Metrics/BlockLength:
+  Exclude:
+    - spec/**/*_spec.rb
+    - "*.gemspec"
+
+Metrics/MethodLength:
+  Max: 10
+
+RSpec/NamedSubject:
+  Enabled: false
 
 Style/StringLiterals:
   Enabled: true
@@ -9,5 +31,14 @@ Style/StringLiteralsInInterpolation:
   Enabled: true
   EnforcedStyle: double_quotes
 
-Layout/LineLength:
-  Max: 120
+Style/Documentation:
+  Enabled: false
+
+Style/SymbolArray:
+  EnforcedStyle: brackets
+
+Style/WordArray:
+  EnforcedStyle: brackets
+
+Style/ClassAndModuleChildren:
+  EnforcedStyle: compact
