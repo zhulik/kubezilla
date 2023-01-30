@@ -29,6 +29,8 @@ Gem::Specification.new do |spec|
   spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
+  spec.add_dependency "async", "~> 2.3.0"
+  spec.add_dependency "async-http-faraday", "~> 0.11"
   spec.add_dependency "memery", "~> 1.4.0"
   spec.add_dependency "zeitwerk", "~> 2.6.0"
   spec.add_dependency "zilla", "~> 0.1.2"

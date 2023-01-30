@@ -17,3 +17,5 @@ gem "webmock"
 
 gem "overcommit"
 gem "solargraph"
+
+gem "async-rspec"
