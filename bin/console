@@ -12,4 +12,7 @@ require "kubezilla"
 # Pry.start
 
 require "irb"
-IRB.start(__FILE__)
+
+Sync do
+  IRB.start(__FILE__)
+end

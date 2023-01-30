@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+require "async"
+require "async/http/faraday"
+require "console"
+
 require "zilla"
 require "memery"
 require "zeitwerk"

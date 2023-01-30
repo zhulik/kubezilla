@@ -2,3 +2,8 @@
 # frozen_string_literal: true
 
 require "kubezilla"
+
+Sync do
+  app = Kubezilla::Application.new(*ARGV)
+  app.run
+end
