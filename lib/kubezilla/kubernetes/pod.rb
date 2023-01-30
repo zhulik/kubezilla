@@ -4,7 +4,7 @@ class Kubezilla::Kubernetes::Pod
   include Kubezilla::Kubernetes
   include Memery
 
-  attr_reader :json, :client
+  attr_reader :json, :client, :application
 
   def initialize(json, application:)
     @json = json
@@ -14,4 +14,6 @@ class Kubezilla::Kubernetes::Pod
   memoize def images = @json.dig("status", "containerStatuses").map { Image.new(_1, pod: self) }
 
   def annotated?(annotation) = @json.dig("metadata", "annotations", annotation)
+  def name = @json.dig("metadata", "name")
+  def namespace = @json.dig("metadata", "namespace")
 end

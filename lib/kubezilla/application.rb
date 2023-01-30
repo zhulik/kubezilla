@@ -28,6 +28,8 @@ class Kubezilla::Application
       end
       info { "Sleeping for #{@sleep_interval} seconds..." }
       Async::Task.current.sleep(@sleep_interval)
+    rescue StandardError => e
+      warn { e }
     end
   end
 
@@ -48,22 +50,28 @@ class Kubezilla::Application
 
     info { "Found #{pods.count} pods and #{images.count} images to watch..." }
     images = images.map do |image|
-      Async do
-        needs_update = needs_update?(image)
-        { image:, needs_update: }
-      end
+      Async { { image:, new_digest: needs_update?(image) } }
     end.map(&:wait)
-    update_images!(images.select { _1[:needs_update] }.map { _1[:image] })
+    update_images!(images.select { _1[:new_digest] })
   end
 
   def update_images!(images)
     info { "Found #{images.count} images to update..." }
+
+    images.map do |image|
+      Async { update_image!(**image) }
+    end.map(&:wait)
+  end
+
+  def update_image!(image:, new_digest:)
+    new_digest.split("/")
+    info { "Updating image #{image.name} in pod #{image.pod.name} in app #{image.pod.application.name}" }
   end
 
   def needs_update?(image)
-    Kubezilla::Docker::RegistryFactory.build(image).needs_update?
+    Kubezilla::Docker::RegistryFactory.for(image).needs_update?(image)
   rescue ArgumentError => e
-    warn { "Skipping #{image.image}: #{e.message}" }
+    error { "Skipping #{image.image}: #{e.message}" }
     false
   end
 
