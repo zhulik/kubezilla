@@ -1,6 +1,15 @@
 # frozen_string_literal: true
 
+require "simplecov"
+
+SimpleCov.start
+
 require "kubezilla"
+
+require "syntax_suggest"
+require "webmock/rspec"
+
+Dir["#{__dir__}/support/**/*.rb"].each { |f| load(f) }
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
