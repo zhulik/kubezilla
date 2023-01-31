@@ -9,7 +9,7 @@ class Kubezilla::Application
 
   DEFAULT_SLEEP_INTERVAL = 10
   DEFAULT_CYCLE_TIMEOUT = 10
-  DEFAULT_POD_ANNOTATION = "diun.enable"
+  DEFAULT_POD_ANNOTATION = "kubezilla.enabled"
 
   def initialize(host, scheme)
     @host = host
