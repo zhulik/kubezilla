@@ -4,18 +4,20 @@ source "https://rubygems.org"
 
 gemspec
 
-gem "rake"
+group :development, :test do
+  gem "rake"
 
-gem "rspec"
+  gem "rspec"
 
-gem "rubocop"
-gem "rubocop-performance"
-gem "rubocop-rspec"
+  gem "rubocop"
+  gem "rubocop-performance"
+  gem "rubocop-rspec"
 
-gem "simplecov"
-gem "webmock"
+  gem "simplecov"
+  gem "webmock"
 
-gem "overcommit"
-gem "solargraph"
+  gem "overcommit"
+  gem "solargraph"
 
-gem "async-rspec"
+  gem "async-rspec"
+end
