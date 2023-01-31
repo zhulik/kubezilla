@@ -33,7 +33,7 @@ jobs:
       - name: Run rspec
         run: bundle exec rspec
 
-  publish:
+  publish_gem:
     runs-on: ubuntu-latest
     needs:
       - lint
@@ -61,3 +61,18 @@ jobs:
 
       - name: Push gem
         run: gem push *gem
+
+  publish_docker:
+    needs:
+      - lint
+      - test
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/main' }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build and publish to ghcr.io
+        uses: macbre/push-to-ghcr@master
+        with:
+          image_name: ${{ github.repository }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
