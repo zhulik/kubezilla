@@ -27,7 +27,6 @@ class Kubezilla::Kubernetes::Client
     info { "Building client for #{scheme}:#{host}, cert_path = #{CERT_PATH}" }
     Zilla.for(INPUT, host:, scheme:, faraday_config: { ssl: { ca_file: CERT_PATH } }) do |f, target|
       f.use Faraday::Request::Authorization, :Bearer, token
-      # f.adapter :async_http
       @block.call(f, target) if @block
     end
   end

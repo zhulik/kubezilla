@@ -16,7 +16,6 @@ class Kubezilla::Docker::Registries::Docker < Kubezilla::Docker::Registries::Reg
 
   def connection
     Faraday.new("https://hub.docker.com") do |f|
-      f.adapter :async_http
       f.response :raise_error
     end
   end
