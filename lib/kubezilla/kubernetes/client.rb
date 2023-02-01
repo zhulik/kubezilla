@@ -3,8 +3,13 @@
 class Kubezilla::Kubernetes::Client
   include Kubezilla::Kubernetes
   include Memery
+  include Kubezilla::Logger
 
   INPUT = "#{__dir__}/../../../data/swagger.json".freeze
+
+  SERVICE_ACCOUNT_PATH = "/var/run/secrets/kubernetes.io/serviceaccount"
+  TOKEN_PATH = "#{SERVICE_ACCOUNT_PATH}/token".freeze
+  CERT_PATH = "#{SERVICE_ACCOUNT_PATH}/ca.crt".freeze
 
   # TODO: CronJob, DaemonSet
   APP_TYPES = ["Deployment", "StatefulSet"].freeze
@@ -19,8 +24,10 @@ class Kubezilla::Kubernetes::Client
   end
 
   memoize def client
-    Zilla.for(INPUT, host:, scheme:) do |f, target|
-      f.adapter :async_http
+    info { "Building client for #{scheme}:#{host}, cert_path = #{CERT_PATH}" }
+    Zilla.for(INPUT, host:, scheme:, faraday_config: { ssl: { ca_file: CERT_PATH } }) do |f, target|
+      f.use Faraday::Request::Authorization, :Bearer, token
+      # f.adapter :async_http
       @block.call(f, target) if @block
     end
   end
@@ -39,5 +46,11 @@ class Kubezilla::Kubernetes::Client
 
   def respond_to_missing?(method_name, include_private = false)
     client.respond_to_missing?(method_name, include_private)
+  end
+
+  def token
+    File.read(TOKEN_PATH)
+  rescue Errno::ENOENT
+    warn { "ServiceAccount token file #{TOKEN_PATH} was not found. Not running in kubernetes?" }
   end
 end
