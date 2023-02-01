@@ -11,8 +11,9 @@ class Kubezilla::Application
   DEFAULT_CYCLE_TIMEOUT = 10
   DEFAULT_POD_ANNOTATION = "kubezilla.enabled"
 
-  def initialize(host, scheme)
-    @host = host
+  def initialize(host = nil, scheme = :https)
+    @host = host || "#{ENV.fetch("KUBERNETES_SERVICE_HOST", nil)}:#{ENV.fetch("KUBERNETES_SERVICE_PORT", nil)}"
+
     @scheme = scheme
 
     @sleep_interval = ENV.fetch("KUBEZILLA_SLEEP_INTERVAL", DEFAULT_SLEEP_INTERVAL).to_i
@@ -20,16 +21,18 @@ class Kubezilla::Application
     @annotation = ENV.fetch("KUBEZILLA_POD_ANNOTATION", DEFAULT_POD_ANNOTATION).to_s
   end
 
-  def run
+  def run # rubocop:disable Metrics/MethodLength
     loop do
       Async::Task.current.with_timeout(@cycle_timeout) do
         info { "Looking for updates with timeout of #{@cycle_timeout} seconds..." }
         cycle!
       end
-      info { "Sleeping for #{@sleep_interval} seconds..." }
-      Async::Task.current.sleep(@sleep_interval)
+
     rescue StandardError => e
       warn { e }
+    ensure
+      info { "Sleeping for #{@sleep_interval} seconds..." }
+      Async::Task.current.sleep(@sleep_interval)
     end
   end
 

@@ -24,9 +24,9 @@ class Kubezilla::Kubernetes::Client
   end
 
   memoize def client
-    token
-    Zilla.for(INPUT, host:, scheme:) do |f, target|
-      f.adapter :async_http
+    Zilla.for(INPUT, host:, scheme:, faraday_config: { ssl: { ca_file: CERT_PATH } }) do |f, target|
+      f.use Faraday::Request::Authorization, :Bearer, token
+      # f.adapter :async_http
       @block.call(f, target) if @block
     end
   end
