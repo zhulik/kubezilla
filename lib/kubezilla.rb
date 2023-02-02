@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "async"
+require "async/tools"
 require "console"
 
 require "zilla"

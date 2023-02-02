@@ -1,4 +1,11 @@
 PATH
+  remote: ../async-tools
+  specs:
+    async-tools (0.1.2)
+      async (~> 2.3)
+      zeitwerk (~> 2.6)
+
+PATH
   remote: .
   specs:
     kubezilla (0.1.1)
@@ -159,6 +166,7 @@ PLATFORMS
 
 DEPENDENCIES
   async-rspec
+  async-tools!
   kubezilla!
   overcommit
   rake

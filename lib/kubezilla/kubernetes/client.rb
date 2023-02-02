@@ -31,6 +31,8 @@ class Kubezilla::Kubernetes::Client
     end
   end
 
+  def pods = client.listCoreV1PodForAllNamespaces["items"].map { Pod.new(_1) }
+
   def applications
     APP_TYPES.map do |type|
       Async do

@@ -4,12 +4,13 @@ module Kubezilla::Docker::RegistryFactory
   include Kubezilla::Docker
 
   REGISTRIES = {
-    "docker.io" => Registries::Docker.new
+    "docker.io" => Registries::Docker.new,
+    "ghcr.io" => Registries::Ghcr.new
   }.freeze
 
-  def self.for(image)
-    REGISTRIES[image.registry].tap do |registry|
-      raise ArgumentError, "registry #{image.registry} is unknown" if registry.nil?
+  def self.for(registry)
+    REGISTRIES[registry].tap do |reg|
+      raise ArgumentError, "registry #{registry} is unknown" if reg.nil?
     end
   end
 end

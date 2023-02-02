@@ -6,12 +6,12 @@ class Kubezilla::Kubernetes::Pod
 
   attr_reader :json, :client, :application
 
-  def initialize(json, application:)
+  def initialize(json, application: nil)
     @json = json
     @application = application
   end
 
-  memoize def images = @json.dig("status", "containerStatuses").map { Image.new(_1, pod: self) }
+  memoize def images = @json.dig("status", "containerStatuses").map { Image.new(_1) }
 
   def annotated?(annotation) = @json.dig("metadata", "annotations", annotation)
   def name = @json.dig("metadata", "name")

@@ -7,76 +7,50 @@ class Kubezilla::Application
 
   attr_reader :host, :scheme
 
-  DEFAULT_SLEEP_INTERVAL = 10
-  DEFAULT_CYCLE_TIMEOUT = 10
-  DEFAULT_POD_ANNOTATION = "kubezilla.enabled"
+  SERVICE_HOST = ENV.fetch("KUBERNETES_SERVICE_HOST", nil)
+  SERVICE_PORT = ENV.fetch("KUBERNETES_SERVICE_PORT", nil)
 
   def initialize(host = nil, scheme = :https)
-    @host = host || "#{ENV.fetch("KUBERNETES_SERVICE_HOST", nil)}:#{ENV.fetch("KUBERNETES_SERVICE_PORT", nil)}"
-
+    @host = host || "#{SERVICE_HOST}:#{SERVICE_PORT}"
     @scheme = scheme
-
-    @sleep_interval = ENV.fetch("KUBEZILLA_SLEEP_INTERVAL", DEFAULT_SLEEP_INTERVAL).to_i
-    @cycle_timeout = ENV.fetch("KUBEZILLA_CYCLE_TIMEOUT", DEFAULT_CYCLE_TIMEOUT).to_i
-    @annotation = ENV.fetch("KUBEZILLA_POD_ANNOTATION", DEFAULT_POD_ANNOTATION).to_s
   end
 
-  def run # rubocop:disable Metrics/MethodLength
-    loop do
-      Async::Task.current.with_timeout(@cycle_timeout) do
-        info { "Looking for updates with timeout of #{@cycle_timeout} seconds..." }
-        cycle!
-      end
+  def run
+    print_logs
 
-    rescue StandardError => e
-      warn { e }
-    ensure
-      info { "Sleeping for #{@sleep_interval} seconds..." }
-      Async::Task.current.sleep(@sleep_interval)
-    end
+    Async { update_watcher.run }
+
+    pod_watcher.run
   end
 
   private
 
-  def cycle!
-    apps = kubernetes.applications
+  memoize def pod_watcher = Kubezilla::PodWatcher.new(kubernetes:, bus:)
+  memoize def update_watcher = Kubezilla::UpdateWatcher.new(bus:)
 
-    pods = apps.map { |app| Async { app.pods } }.flat_map(&:wait)
+  def print_logs
+    bus.async_subscribe(:updatable_images_added) do |payload|
+      info { "#{payload[:images].count} images added" }
+    end
 
-    info { "Found #{apps.count} apps and #{pods.count} pods in total..." }
-
-    check_pods!(pods.select { _1.annotated?(@annotation) })
+    bus.async_subscribe(:updatable_images_removed) do |payload|
+      info { "#{payload[:images].count} images removed" }
+    end
   end
 
-  def check_pods!(pods)
-    images = pods.flat_map(&:images).uniq
+  # def update_images!(images)
+  #   info { "Found #{images.count} images to update..." }
 
-    info { "Found #{pods.count} pods and #{images.count} images to watch..." }
-    images = images.map do |image|
-      Async { { image:, new_digest: needs_update?(image) } }
-    end.map(&:wait)
-    update_images!(images.select { _1[:new_digest] })
-  end
+  #   images.map do |image|
+  #     Async { update_image!(**image) }
+  #   end.map(&:wait)
+  # end
 
-  def update_images!(images)
-    info { "Found #{images.count} images to update..." }
-
-    images.map do |image|
-      Async { update_image!(**image) }
-    end.map(&:wait)
-  end
-
-  def update_image!(image:, new_digest:)
-    new_digest.split("/")
-    info { "Updating image #{image.name} in pod #{image.pod.name} in app #{image.pod.application.name}" }
-  end
-
-  def needs_update?(image)
-    Kubezilla::Docker::RegistryFactory.for(image).needs_update?(image)
-  rescue ArgumentError => e
-    error { "Skipping #{image.image}: #{e.message}" }
-    false
-  end
+  # def update_image!(image:, new_digest:)
+  #   new_digest.split("/")
+  #   info { "Updating image #{image.name} in pod #{image.pod.name} in app #{image.pod.application.name}" }
+  # end
 
   memoize def kubernetes = Kubezilla::Kubernetes::Client.new(host:, scheme:)
+  memoize def bus = Async::Bus.get
 end
