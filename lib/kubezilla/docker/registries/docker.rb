@@ -4,12 +4,11 @@ class Kubezilla::Docker::Registries::Docker < Kubezilla::Docker::Registries::Reg
   include Memery
 
   # TODO: support for other archs
-  def needs_update?(image)
+  def published_digest(image)
     body = connection.get("/v2/namespaces/#{image.owner}/repositories/#{image.repo}/tags/#{image.tag}").body
-    manifests = JSON.parse(body)
-    last_digest = manifests["images"].find { _1["architecture"] == "amd64" }["digest"]
 
-    return last_digest if last_digest != image.digest
+    manifests = JSON.parse(body)
+    manifests["images"].find { _1["architecture"] == "amd64" }["digest"]
   end
 
   private

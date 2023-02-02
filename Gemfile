@@ -20,4 +20,6 @@ group :development, :test do
   gem "solargraph"
 
   gem "async-rspec"
+
+  gem "async-tools", path: "../async-tools"
 end
