@@ -3,7 +3,7 @@
 class Kubezilla::Kubernetes::Image
   include Memery
 
-  attr_reader :json, :image, :name, :tag, :registry, :owner, :repo, :digest
+  attr_reader :json, :image, :full_name, :tag, :registry, :owner, :repo, :digest
 
   def initialize(json)
     @json = json
@@ -13,6 +13,8 @@ class Kubezilla::Kubernetes::Image
     @registry, @owner, @repo = @name.split("/")
     @digest = json["imageID"].split("@").last
   end
+
+  memoize def name = "#{@owner}/#{@repo}"
 
   def hash = image.hash
   def ==(other) = image == other.image

@@ -3,19 +3,21 @@
 class Kubezilla::Docker::Registries::Docker < Kubezilla::Docker::Registries::Registry
   include Memery
 
-  # TODO: support for other archs
-  def published_digest(image)
-    body = connection.get("/v2/namespaces/#{image.owner}/repositories/#{image.repo}/tags/#{image.tag}").body
-
-    manifests = JSON.parse(body)
-    manifests["images"].find { _1["architecture"] == "amd64" }["digest"]
-  end
-
   private
 
   def connection
-    Faraday.new("https://hub.docker.com") do |f|
+    Faraday.new("https://registry-1.docker.io") do |f|
       f.response :raise_error
     end
+  end
+
+  def token_connection
+    Faraday.new("https://auth.docker.io") do |f|
+      f.response :raise_error
+    end
+  end
+
+  def token(name)
+    JSON.parse(token_connection.get("token?service=registry.docker.io&scope=repository:#{name}:pull").body)["token"]
   end
 end
