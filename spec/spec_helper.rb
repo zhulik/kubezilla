@@ -4,7 +4,7 @@ require "simplecov"
 
 SimpleCov.start
 
-require "kubezilla"
+require "app"
 
 require "syntax_suggest"
 require "webmock/rspec"

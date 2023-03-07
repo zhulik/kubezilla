@@ -2,7 +2,22 @@
 
 source "https://rubygems.org"
 
-gemspec
+gem "async"
+gem "async-http"
+gem "async-tools", path: "../async-tools"
+
+gem "console"
+gem "memery"
+gem "zeitwerk"
+gem "zilla"
+
+gem "dry-container"
+gem "dry-initializer"
+gem "dry-struct"
+gem "dry-types"
+
+gem "activesupport", require: "active_support/all"
+gem "get_process_mem"
 
 group :development, :test do
   gem "rake"

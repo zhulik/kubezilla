@@ -1,9 +1,8 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require "kubezilla"
+require_relative "../lib/app"
 
 Sync do
-  app = Kubezilla::Application.new(*ARGV)
-  app.run
+  Sync { App::Application.new }
 end
