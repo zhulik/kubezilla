@@ -5,8 +5,7 @@ class App::Application < Async::App
 
   def container_config
     {
-      kubernetes: Zilla::Kubernetes.new(host: config.kubernetes_url,
-                                        scheme: config.kubernetes_scheme)
+      kubernetes: Zilla::Kubernetes.new(host: config.kubernetes_url, scheme: config.kubernetes_scheme)
     }
   end
 
