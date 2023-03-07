@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+ENV["CONSOLE_LEVEL"] = "fatal"
+ENV["NOTIFICATION_WEBHOOK_URL"] = "https://example.com"
+
 require "simplecov"
 
 SimpleCov.start do

@@ -45,3 +45,6 @@ Style/ClassAndModuleChildren:
 
 RSpec/ExampleLength:
   Max: 15
+
+RSpec/MultipleExpectations:
+  Enabled: false
