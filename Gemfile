@@ -22,19 +22,16 @@ gem "activesupport", require: "active_support/all"
 gem "get_process_mem"
 
 group :development, :test do
-  gem "rake"
-
-  gem "rspec"
-
-  gem "rubocop"
-  gem "rubocop-performance"
-  gem "rubocop-rspec"
-
-  gem "simplecov"
-  gem "webmock"
-
-  gem "overcommit"
-  gem "solargraph"
+  gem "overcommit", require: false
+  gem "rake", require: false
+  gem "rspec", require: false
+  gem "rubocop", require: false
+  gem "rubocop-performance", require: false
+  gem "rubocop-rspec", require: false
+  gem "simplecov", require: false
+  gem "solargraph", require: false
 
   gem "async-rspec"
+  gem "vcr"
+  gem "webmock"
 end

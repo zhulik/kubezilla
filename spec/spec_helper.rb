@@ -3,6 +3,8 @@
 ENV["CONSOLE_LEVEL"] = "fatal"
 ENV["NOTIFICATION_WEBHOOK_URL"] = "https://example.com"
 
+Bundler.require(:test)
+
 require "simplecov"
 
 SimpleCov.start do
@@ -11,9 +13,7 @@ end
 
 require "app"
 
-require "syntax_suggest"
 require "webmock/rspec"
-require "async/rspec"
 
 Dir["#{__dir__}/support/**/*.rb"].each { |f| load(f) }
 
