@@ -42,3 +42,6 @@ Style/WordArray:
 
 Style/ClassAndModuleChildren:
   EnforcedStyle: compact
+
+RSpec/ExampleLength:
+  Max: 15

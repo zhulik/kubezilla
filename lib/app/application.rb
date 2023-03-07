@@ -21,9 +21,7 @@ class App::Application < Async::App
   memoize def config = Config.build
 
   def start_notifier!
-    return unless config.notification_webhook_url
-
-    Notifier.new(url: config.notification_webhook_url).run
+    Notifier.new(url: config.notification_webhook_url).run if config.notification_webhook_url
   end
 
   def start_deployment_poller! = App::Kubernetes::DeploymentPoller.new.run
