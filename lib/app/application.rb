@@ -17,6 +17,8 @@ class App::Application < Async::App
 
   private
 
+  def app_name = :kubezilla
+
   memoize def config = Config.build
 
   def start_notifier!

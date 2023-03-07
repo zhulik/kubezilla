@@ -26,8 +26,6 @@ class App::Kubernetes::ApplicationPoller
 
   private
 
-  def app_name = :kubezilla
-
   memoize def state = {}
 
   def enabled_apps = fetch_apps.items.select { enabled?(_1) }.index_by { app_key(_1) }
