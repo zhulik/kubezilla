@@ -5,23 +5,22 @@ class App::Notifier
 
   include App
 
+  APPLICATION_ADDED = App::Kubernetes::ApplicationPoller::APPLICATION_ADDED
+  APPLICATION_REMOVED = App::Kubernetes::ApplicationPoller::APPLICATION_REMOVED
+
   option :url, type: T::Strict::String
 
   def run
-    bus.async_subscribe("kubernetes.application.published_image_updated") do |event|
-      send_notification(event, "is about to be restarted")
-    end
-
-    bus.async_subscribe("kubernetes.application.restarted") do |event|
-      send_notification(event, "has been restarted!")
-    end
+    bus.async_subscribe(APPLICATION_ADDED) { send_app_notification(_1, "has been added to kubezilla!") }
+    bus.async_subscribe(APPLICATION_REMOVED) { send_app_notification(_1, "has been removed from kubezilla!") }
   end
 
   private
 
-  def send_notification(event, message)
-    header = "Kubezilla:\n\n#{event[:kind]} *#{event[:namespace]}/#{event[:name]}*"
-    connection.post("", { text: "#{header}\n#{message}" })
+  def send_app_notification(app, message)
+    "Kubezilla:\n\n#{app.class} *#{app.metadata.namespace}/#{app.metadata.name}*".then do |header|
+      connection.post("", { text: "#{header}\n#{message}" })
+    end
   end
 
   memoize def connection
