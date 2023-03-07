@@ -1,4 +1,4 @@
-FROM ruby:3.2.0-slim as base
+FROM ruby:3.2.0-alpine as base
 
 WORKDIR /mnt
 
@@ -7,22 +7,21 @@ RUN adduser --system app &&\
   bundle config set --local deployment 'true' &&\
   bundle config set --local without 'development test'
 
-RUN apt-get update &&\
-  apt-get install -qy --no-install-recommends git
-
-
 FROM base as builder
 
-RUN apt-get update &&\
-  apt-get install -qy --no-install-recommends build-essential
+RUN apk update &&\
+  apk add alpine-sdk --no-cache
 
-COPY . .
+COPY Gemfile Gemfile.lock ./
 RUN bundle install
+RUN bundle exec bootsnap precompile --gemfile exe/ lib/
 
 FROM base
 
-COPY --from=builder /mnt/ .
+COPY --from=builder /mnt .
+
+ADD . .
 
 USER app
 
-CMD ["bundle", "exec", "./exe/kubezilla", "127.0.0.1:8001", "http"]
+CMD ["bundle", "exec", "./exe/kubezilla"]

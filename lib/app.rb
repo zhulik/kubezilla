@@ -2,6 +2,9 @@
 
 require "bundler/setup"
 
+require "bootsnap"
+Bootsnap.setup(cache_dir: "tmp/cache")
+
 Bundler.require(:default)
 
 loader = Zeitwerk::Loader.for_gem

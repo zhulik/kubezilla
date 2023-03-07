@@ -9,7 +9,7 @@ class App::Kubernetes::ApplicationPoller
   APPLICATION_REMOVED = "kubezilla.applications.removed"
 
   def run
-    Async::Timer.new(3, run_on_start: true, call: self, on_error: ->(e) { warn(e) })
+    Async::Timer.new(30, run_on_start: true, call: self, on_error: ->(e) { warn(e) })
     info { "Started" }
   end
 

@@ -18,8 +18,10 @@ class App::Notifier
   private
 
   def send_app_notification(app, message)
-    "Kubezilla:\n\n#{app.class} *#{app.metadata.namespace}/#{app.metadata.name}*".then do |header|
-      connection.post("", { text: "#{header}\n#{message}" })
+    Async do
+      "Kubezilla:\n\n#{app.class} *#{app.metadata.namespace}/#{app.metadata.name}*".then do |header|
+        connection.post("", { text: "#{header}\n#{message}" })
+      end
     end
   end
 
