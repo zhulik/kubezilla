@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class App::Kubernetes::ApplicationPoller
+class App::Kubernetes::ApplicationListPoller
   include App
 
   inject :kubernetes

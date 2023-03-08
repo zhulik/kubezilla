@@ -11,7 +11,7 @@ class App::Application < Async::App
 
   def run!
     start_notifier!
-    start_deployment_poller!
+    start_deployment_list_poller!
   end
 
   private
@@ -24,5 +24,5 @@ class App::Application < Async::App
     Notifier.new(url: config.notification_webhook_url).run if config.notification_webhook_url
   end
 
-  def start_deployment_poller! = App::Kubernetes::DeploymentPoller.new.run
+  def start_deployment_list_poller! = App::Kubernetes::DeploymentListPoller.new.run
 end
