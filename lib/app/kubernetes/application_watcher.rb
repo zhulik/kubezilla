@@ -4,7 +4,8 @@
 # TODO: parse config and use struct
 class App::Kubernetes::ApplicationWatcher
   APPLICATION_ADDED = "kubezilla.application.added"
-  APPLICATION_REMOVED = "kubezilla.applications.removed"
+  APPLICATION_REMOVED = "kubezilla.application.removed"
+  APPLICATION_CHANGED = "kubezilla.application.changed"
 
   include App
   extend Dry::Initializer
@@ -14,7 +15,10 @@ class App::Kubernetes::ApplicationWatcher
   option :application, T.Interface(:kind)
 
   # TODO: use watch
-  def run = update_config!(parse_config(application))
+  def run
+    @parent = Async::Task.current
+    update_config!(parse_config(application))
+  end
 
   def call
     fetch_app.tap do |app|
@@ -36,10 +40,10 @@ class App::Kubernetes::ApplicationWatcher
   memoize def config = {}
   def parse_config(app) = app.metadata.annotations.select { _1.start_with?("kubezilla") }
 
-  def update_config!(new_config)
+  def update_config!(new_config) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
     config.replace(new_config)
-    # TODO: send event
-    return stop! unless config["kubezilla.enabled"] == "true"
+
+    return stop! unless ["true", "1"].include?(config["kubezilla.enabled"])
 
     # Start timer if not started
     if @timer.nil?
@@ -49,8 +53,10 @@ class App::Kubernetes::ApplicationWatcher
     end
 
     # config changed, stop existing timer, start a new one
-    @timer.stop
-    @timer = build_timer
+    bus.publish(APPLICATION_CHANGED, application)
+    t = @timer
+    @parent.async { @timer = build_timer }
+    t.stop
     info { "Restarted" }
   end
 
