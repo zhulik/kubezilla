@@ -5,8 +5,8 @@ class App::Notifier
 
   include App
 
-  APPLICATION_ADDED = App::Kubernetes::ApplicationWatcher::APPLICATION_ADDED
-  APPLICATION_REMOVED = App::Kubernetes::ApplicationWatcher::APPLICATION_REMOVED
+  APPLICATION_ADDED = App::Kubernetes::ApplicationConfigWatcher::APPLICATION_ADDED
+  APPLICATION_REMOVED = App::Kubernetes::ApplicationConfigWatcher::APPLICATION_REMOVED
 
   option :url, type: T::Strict::String
 

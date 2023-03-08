@@ -16,7 +16,7 @@ class App::Kubernetes::ApplicationListPoller
 
     state.replace(apps)
 
-    added.each { App::Kubernetes::ApplicationWatcher.new(application: _1).run }
+    added.each { App::Kubernetes::ApplicationConfigWatcher.new(application: _1).run }
   end
 
   private
