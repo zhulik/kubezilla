@@ -9,6 +9,7 @@ Bundler.require(:default)
 
 require "zilla/api/apps_v1_api"
 require "zilla/api_client"
+require "zilla/api_error"
 require "zilla/version"
 require "zilla/configuration"
 

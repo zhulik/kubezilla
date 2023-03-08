@@ -10,7 +10,8 @@ class App::Application < Async::App
   end
 
   def run!
-    start_notifier!
+    start_notifier! if config.notification_webhook_url
+    start_application_watch_scheduler!
     start_deployment_list_poller!
   end
 
@@ -20,9 +21,7 @@ class App::Application < Async::App
 
   memoize def config = Config.build
 
-  def start_notifier!
-    Notifier.new(url: config.notification_webhook_url).run if config.notification_webhook_url
-  end
-
+  def start_notifier! = Notifier.new(url: config.notification_webhook_url).run
   def start_deployment_list_poller! = App::Kubernetes::DeploymentListPoller.new.run
+  def start_application_watch_scheduler! = App::ApplicationWatchScheduler.new.run
 end
