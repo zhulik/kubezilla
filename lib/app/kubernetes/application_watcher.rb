@@ -29,6 +29,10 @@ class App::Kubernetes::ApplicationWatcher
 
       update_config!(new_config)
     end
+  rescue Zilla::ApiError => e
+    return stop! if e.code == 404 # app was deleted
+
+    raise
   end
 
   private
