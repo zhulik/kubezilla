@@ -9,7 +9,7 @@ gem "async-tools"
 gem "console"
 gem "memery"
 gem "zeitwerk"
-gem "zilla"
+gem "zilla", require: false
 
 gem "bootsnap", require: false
 
