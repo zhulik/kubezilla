@@ -48,3 +48,6 @@ RSpec/ExampleLength:
 
 RSpec/MultipleExpectations:
   Enabled: false
+
+Style/NumberedParametersLimit:
+  Max: 2
