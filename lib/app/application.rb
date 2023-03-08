@@ -11,7 +11,6 @@ class App::Application < Async::App
 
   def run!
     start_notifier! if config.notification_webhook_url
-    start_application_watch_scheduler!
     start_deployment_list_poller!
   end
 

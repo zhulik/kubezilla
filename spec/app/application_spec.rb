@@ -5,11 +5,11 @@ RSpec.describe App::Application, async: true do
     subject { described_class.new }
 
     let(:notifier) { instance_double(App::Notifier, run: true) }
-    let(:poller) { instance_double(App::Kubernetes::DeploymentPoller, run: true) }
+    let(:poller) { instance_double(App::Kubernetes::DeploymentListPoller, run: true) }
 
     before do
       allow(App::Notifier).to receive(:new).and_return(notifier)
-      allow(App::Kubernetes::DeploymentPoller).to receive(:new).and_return(poller)
+      allow(App::Kubernetes::DeploymentListPoller).to receive(:new).and_return(poller)
     end
 
     it "runs" do

@@ -3,6 +3,9 @@
 # TODO: add support for other than Deployment app kinds
 # TODO: parse config and use struct
 class App::Kubernetes::ApplicationWatcher
+  APPLICATION_ADDED = "kubezilla.application.added"
+  APPLICATION_REMOVED = "kubezilla.applications.removed"
+
   include App
   extend Dry::Initializer
 
@@ -41,6 +44,7 @@ class App::Kubernetes::ApplicationWatcher
     # Start timer if not started
     if @timer.nil?
       @timer = build_timer
+      bus.publish(APPLICATION_ADDED, application)
       return info { "Started" }
     end
 
@@ -51,9 +55,9 @@ class App::Kubernetes::ApplicationWatcher
   end
 
   def stop!
-    # TODO: send event
     @timer&.stop
     info { "Stopped" }
+    bus.publish(APPLICATION_REMOVED, application)
   end
 
   def logger_info = "Application: #{app_namespace}/#{app_name}"
