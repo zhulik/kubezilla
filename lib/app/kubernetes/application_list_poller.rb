@@ -3,23 +3,24 @@
 class App::Kubernetes::ApplicationListPoller
   include App
 
+  include Async::App::TimerComponent
+
   inject :kubernetes
 
-  def run
-    Async::Timer.new(3, run_on_start: true, call: self, on_error: ->(e) { warn(e) })
-    info { "Started" }
-  end
-
-  def call
+  def on_tick
     apps = enabled_apps
     added = apps.except(*state.keys).values
 
     state.replace(apps)
 
-    added.each { App::Kubernetes::ApplicationConfigWatcher.new(application: _1).run }
+    added.each { App::Kubernetes::ApplicationConfigWatcher.new(application: _1).start! }
   end
 
   private
+
+  def interval = 3
+  def run_on_start = true
+  def on_error(exception) = warn { exception }
 
   memoize def state = {}
 

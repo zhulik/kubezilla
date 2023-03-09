@@ -14,7 +14,7 @@ class App::Application < Async::App
   def run!
     start_notifier! if config.notification_webhook_url
 
-    bus.subscribe(APPLICATION_ADDED) { App::ApplicationPodWatcher.new(application: _1).run }
+    bus.subscribe(APPLICATION_ADDED) { App::ApplicationPodWatcher.new(application: _1).start! }
 
     start_deployment_list_poller!
   end
@@ -25,7 +25,6 @@ class App::Application < Async::App
 
   memoize def config = Config.build
 
-  def start_notifier! = Notifier.new(url: config.notification_webhook_url).run
-  def start_deployment_list_poller! = App::Kubernetes::DeploymentListPoller.new.run
-  def start_application_watch_scheduler! = App::ApplicationWatchScheduler.new.run
+  def start_notifier! = Notifier.new(url: config.notification_webhook_url).start!
+  def start_deployment_list_poller! = App::Kubernetes::DeploymentListPoller.new.start!
 end

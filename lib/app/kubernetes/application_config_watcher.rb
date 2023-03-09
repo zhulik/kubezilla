@@ -7,6 +7,7 @@ class App::Kubernetes::ApplicationConfigWatcher
   APPLICATION_CHANGED = "kubezilla.application.changed"
 
   include App
+  include Async::App::TimerComponent
   extend Dry::Initializer
 
   inject :kubernetes
@@ -14,13 +15,9 @@ class App::Kubernetes::ApplicationConfigWatcher
   option :application, T.Interface(:kind)
 
   # TODO: use watch
-  def run
-    @parent = Async::Task.current
-    @config = nil
-    update_config!(application)
-  end
+  def after_init = update_config!(application)
 
-  def call
+  def on_tick
     fetch_app.tap do |app|
       next if app.metadata.resource_version == application.metadata.resource_version
 
@@ -37,7 +34,12 @@ class App::Kubernetes::ApplicationConfigWatcher
 
   private
 
+  def interval = @config&.polling_interval
+  def run_on_start = true
+  def on_error(exception) = warn(exception)
+
   def logger_info = "Application: #{app_namespace}/#{app_name}"
+
   def app_name = application.metadata.name
   def app_namespace = application.metadata.namespace
   def fetch_app = kubernetes.apps_v1_api.read_apps_v1_namespaced_deployment(app_name, app_namespace)
@@ -49,31 +51,17 @@ class App::Kubernetes::ApplicationConfigWatcher
 
     return stop! unless @config.enabled?
 
-    # Start timer if not started
-    if @timer.nil?
-      @timer = build_timer
-      bus.publish(APPLICATION_ADDED, application)
-      return info { "Started. Polling interval=#{@config.polling_interval}" }
+    if @timer.active?
+      restart! if old_config != new_config
+      return
     end
 
-    # config changed restart timer
-    restart! if old_config != new_config
+    run!
+    bus.publish(APPLICATION_ADDED, application)
   end
 
   def stop!
-    @timer&.stop
-    info { "Stopped" }
+    super
     bus.publish(APPLICATION_REMOVED, application)
-  end
-
-  def restart!
-    t = @timer
-    @parent.async { @timer = build_timer }
-    t.stop
-    info { "Restarted. Polling interval=#{@config.polling_interval}" }
-  end
-
-  def build_timer
-    Async::Timer.new(@config.polling_interval, run_on_start: true, call: self, on_error: ->(e) { warn(e) })
   end
 end

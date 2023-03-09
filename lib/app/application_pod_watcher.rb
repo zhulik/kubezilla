@@ -2,6 +2,8 @@
 
 class App::ApplicationPodWatcher
   include App
+  include Async::App::TimerComponent
+
   extend Dry::Initializer
 
   inject :kubernetes
@@ -11,41 +13,28 @@ class App::ApplicationPodWatcher
   APPLICATION_REMOVED = App::Kubernetes::ApplicationConfigWatcher::APPLICATION_REMOVED
   APPLICATION_CHANGED = App::Kubernetes::ApplicationConfigWatcher::APPLICATION_CHANGED
 
-  def run
-    @parent = Async::Task.current
-    @timer = build_timer
-
+  def after_init
     bus.subscribe(APPLICATION_REMOVED) { stop! }
     bus.subscribe(APPLICATION_CHANGED) do |app|
       @application = app
       restart!
     end
-    info { "Started. Polling interval = #{polling_interval}" }
   end
 
-  def call
+  def on_tick
     pp(fetch_images)
-    info { "Call" }
+    info { "Tick" }
   end
 
   private
 
-  def polling_interval = App::Kubernetes::ApplicationConfig.for(application).polling_interval
-
-  def restart!
-    t = @timer
-    @parent.async { @timer = build_timer }
-    t.stop
-    info { "Restarted. Polling interval=#{polling_interval}" }
-  end
+  def interval = App::Kubernetes::ApplicationConfig.for(application).polling_interval
+  def run_on_start = true
+  def on_error(exception) = warn(exception)
 
   def logger_info = "Application: #{app_namespace}/#{app_name}"
   def app_name = application.metadata.name
   def app_namespace = application.metadata.namespace
-
-  def stop!
-    info { "Stopped" }
-  end
 
   # def find_images!
   #   fetch_images.tap do |images|
@@ -70,6 +59,4 @@ class App::ApplicationPodWatcher
               .flat_map { _1.status.container_statuses.map { |s| { image: s.image, image_id: s.image_id } } }
               .to_set
   end
-
-  def build_timer = Async::Timer.new(polling_interval, run_on_start: true, call: self, on_error: ->(e) { warn(e) })
 end

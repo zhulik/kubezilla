@@ -3,7 +3,5 @@
 class App::Docker::ImagePoller
   include App
 
-  def run; end
-
-  def stop; end
+  def run!; end
 end
