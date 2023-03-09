@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 # TODO: add support for other than Deployment app kinds
-# TODO: parse config and use struct
 class App::Kubernetes::ApplicationConfigWatcher
   APPLICATION_ADDED = "kubezilla.application.added"
   APPLICATION_REMOVED = "kubezilla.application.removed"
@@ -13,18 +12,6 @@ class App::Kubernetes::ApplicationConfigWatcher
   inject :kubernetes
 
   option :application, T.Interface(:kind)
-
-  class Config < Dry::Struct
-    include App
-
-    attribute :enabled, T::Params::Bool
-
-    attribute?(:polling_interval, T::Strict::Float.default(300.0).constructor do |arg|
-      arg == Dry::Core::Undefined ? arg : App::IntervalParser.parse(arg)
-    end)
-
-    def enabled? = enabled
-  end
 
   # TODO: use watch
   def run
@@ -55,15 +42,8 @@ class App::Kubernetes::ApplicationConfigWatcher
   def app_namespace = application.metadata.namespace
   def fetch_app = kubernetes.apps_v1_api.read_apps_v1_namespaced_deployment(app_name, app_namespace)
 
-  def parse_config(app)
-    Config.new(**app.metadata
-                    .annotations
-                    .select { _1.start_with?("kubezilla") }
-                    .transform_keys { _1[10..].to_sym })
-  end
-
   def update_config!(app)
-    new_config = parse_config(app)
+    new_config = App::Kubernetes::ApplicationConfig.for(app)
     old_config = @config
     @config = new_config
 
