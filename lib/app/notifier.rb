@@ -17,7 +17,7 @@ class App::Notifier
 
     bus.async_subscribe(APPLICATION_ADDED) { send_app_notification(_1, "has been added to kubezilla!") }
     bus.async_subscribe(APPLICATION_REMOVED) { send_app_notification(_1, "has been removed from kubezilla!") }
-    info { "Started" }
+    super
   end
 
   private

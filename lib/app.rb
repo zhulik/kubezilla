@@ -15,12 +15,6 @@ require "zilla/configuration"
 require "zilla/api/apps_v1_api"
 require "zilla/api/core_v1_api"
 
-# TODO: move to to zilla/kubernetes
-def Zilla.const_missing(name)
-  require "zilla/models/#{name.to_s.underscore}"
-  Zilla.const_get(name)
-end
-
 require "zilla/kubernetes"
 
 loader = Zeitwerk::Loader.for_gem
@@ -36,7 +30,6 @@ module App
   end
 
   def self.included(base)
-    base.include(Async::App::Component)
     base.include(Memery)
   end
 end

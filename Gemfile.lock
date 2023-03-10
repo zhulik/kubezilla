@@ -8,7 +8,7 @@ PATH
 PATH
   remote: ../openapi/zilla
   specs:
-    zilla (0.2.2)
+    zilla (0.2.3)
       faraday (>= 1.0.1, < 3.0)
       faraday-multipart (~> 1.0.0)
 
