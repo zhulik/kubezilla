@@ -4,5 +4,5 @@
 require_relative "../lib/app"
 
 Sync do
-  Sync { App::Application.new }
+  Sync { App::Application.new.start! }
 end
