@@ -14,8 +14,8 @@ class App::ApplicationPodWatcher
   APPLICATION_CHANGED = App::Kubernetes::ApplicationConfigWatcher::APPLICATION_CHANGED
 
   def after_init
-    bus.subscribe(APPLICATION_REMOVED) { stop! }
-    bus.subscribe(APPLICATION_CHANGED) do |app|
+    bus.subscribe("#{APPLICATION_REMOVED}/#{app_id}") { stop! }
+    bus.subscribe("#{APPLICATION_CHANGED}/#{app_id}") do |app|
       @application = app
       restart!
     end
@@ -35,6 +35,7 @@ class App::ApplicationPodWatcher
   def logger_info = "Application: #{app_namespace}/#{app_name}"
   def app_name = application.metadata.name
   def app_namespace = application.metadata.namespace
+  def app_id = "#{app_namespace}/#{app_name}"
 
   # def find_images!
   #   fetch_images.tap do |images|

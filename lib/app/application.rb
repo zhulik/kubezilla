@@ -21,7 +21,7 @@ class App::Application < Async::App
 
   private
 
-  def app_name = :kubezilla
+  def async_app_name = :kubezilla
 
   memoize def config = Config.build
 

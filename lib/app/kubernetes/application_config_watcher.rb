@@ -19,10 +19,10 @@ class App::Kubernetes::ApplicationConfigWatcher
 
   def on_tick
     fetch_app.tap do |app|
-      next if app.metadata.resource_version == application.metadata.resource_version
+      next unless version_changed?(app)
 
       @application = app
-      bus.publish(APPLICATION_CHANGED, application)
+      bus.publish("#{APPLICATION_CHANGED}/#{app_id}", application)
 
       update_config!(app)
     end
@@ -42,7 +42,9 @@ class App::Kubernetes::ApplicationConfigWatcher
 
   def app_name = application.metadata.name
   def app_namespace = application.metadata.namespace
+  def app_id = "#{app_namespace}/#{app_name}"
   def fetch_app = kubernetes.apps_v1_api.read_apps_v1_namespaced_deployment(app_name, app_namespace)
+  def version_changed?(app) = app.metadata.resource_version != application.metadata.resource_version
 
   def update_config!(app)
     new_config = App::Kubernetes::ApplicationConfig.for(app)
@@ -62,6 +64,6 @@ class App::Kubernetes::ApplicationConfigWatcher
 
   def stop!
     super
-    bus.publish(APPLICATION_REMOVED, application)
+    bus.publish("#{APPLICATION_REMOVED}/#{app_id}", application)
   end
 end
