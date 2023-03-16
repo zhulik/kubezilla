@@ -2,13 +2,10 @@
 
 source "https://rubygems.org"
 
-gem "async"
 gem "async-http"
 gem "async-tools"
 
-gem "console"
 gem "memery"
-gem "zeitwerk"
 gem "zilla", require: false
 
 gem "bootsnap", require: false

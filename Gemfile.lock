@@ -203,12 +203,10 @@ PLATFORMS
 
 DEPENDENCIES
   activesupport
-  async
   async-http
   async-rspec
   async-tools
   bootsnap
-  console
   dry-container
   dry-initializer
   dry-struct
@@ -225,7 +223,6 @@ DEPENDENCIES
   solargraph
   vcr
   webmock
-  zeitwerk
   zilla
 
 BUNDLED WITH
