@@ -40,9 +40,6 @@ Style/SymbolArray:
 Style/WordArray:
   EnforcedStyle: brackets
 
-Style/ClassAndModuleChildren:
-  EnforcedStyle: compact
-
 RSpec/ExampleLength:
   Max: 15
 

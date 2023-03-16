@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
-class App::Docker::ImagePoller
-  include App
+module App
+  module Docker
+    class ImagePoller
+      include App
 
-  def run!; end
+      def run!; end
+    end
+  end
 end
