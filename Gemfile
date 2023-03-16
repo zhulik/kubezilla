@@ -4,12 +4,12 @@ source "https://rubygems.org"
 
 gem "async"
 gem "async-http"
-gem "async-tools", path: "../async-tools"
+gem "async-tools"
 
 gem "console"
 gem "memery"
 gem "zeitwerk"
-gem "zilla", require: false, path: "../openapi/zilla"
+gem "zilla", require: false
 
 gem "bootsnap", require: false
 
