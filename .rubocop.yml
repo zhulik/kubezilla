@@ -51,3 +51,6 @@ RSpec/MultipleExpectations:
 
 Style/NumberedParametersLimit:
   Max: 2
+
+RSpec/NestedGroups:
+  Max: 4
