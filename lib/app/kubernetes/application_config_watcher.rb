@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 # TODO: add support for other than Deployment app kinds
+# TODO: use watch
 class App::Kubernetes::ApplicationConfigWatcher
   APPLICATION_ADDED = "kubezilla.application.added"
   APPLICATION_REMOVED = "kubezilla.application.removed"
@@ -14,7 +15,6 @@ class App::Kubernetes::ApplicationConfigWatcher
 
   option :application, T.Interface(:kind)
 
-  # TODO: use watch
   def after_init = update_config!(application)
 
   def on_tick
@@ -34,7 +34,7 @@ class App::Kubernetes::ApplicationConfigWatcher
 
   private
 
-  def interval = @config&.polling_interval
+  def interval = 10
   def run_on_start = true
   def on_error(exception) = warn(exception)
 
